@@ -8,8 +8,8 @@ pub struct Almanac {
     fertilizer_to_water: AlmanacMapping,
     water_to_light: AlmanacMapping,
     light_to_temperature: AlmanacMapping,
-    tempature_to_humidity: AlmanacMapping,
-    humidity_to_location: AlmanacMapping,
+    temperature_to_humidity: AlmanacMapping,
+    pub humidity_to_location: AlmanacMapping,
 }
 
 impl Almanac {
@@ -19,11 +19,31 @@ impl Almanac {
         let water = self.fertilizer_to_water.get(fertilizer);
         let light = self.water_to_light.get(water);
         let tempature = self.light_to_temperature.get(light);
-        let humidity = self.tempature_to_humidity.get(tempature);
+        let humidity = self.temperature_to_humidity.get(tempature);
         return self.humidity_to_location.get(humidity);
     }
     pub fn seeds(&self) -> impl Iterator<Item = &u64> {
         return self.seeds.iter();
+    }
+
+    pub fn location_to_seed(&self, location: u64) -> Option<u64> {
+        let humidity = self.humidity_to_location.get_rev(location);
+        let temp = self.temperature_to_humidity.get_rev(humidity);
+        let light = self.light_to_temperature.get_rev(temp);
+        let water = self.water_to_light.get_rev(light);
+        let fert = self.fertilizer_to_water.get_rev(water);
+        let soil = self.soil_to_fertilizer.get_rev(fert);
+        let seed = self.seed_to_soil.get_rev(soil);
+
+        let range_lengths = self.seeds().skip(1).step_by(2);
+        for (start, len) in self.seeds().step_by(2).zip(range_lengths) {
+            let range = *start..*start + *len;
+            if range.contains(&seed) {
+                return Some(seed);
+            }
+        }
+
+        return None;
     }
 }
 impl From<&str> for Almanac {
@@ -31,7 +51,7 @@ impl From<&str> for Almanac {
         let mut blocks = input.split("\n\n");
 
         let seed_block = blocks.next().unwrap();
-        let seeds: Box<[u64]> = seed_block[6..]
+        let mut seeds: Box<[u64]> = seed_block[6..]
             .split_whitespace()
             .map(|seed| seed.parse::<u64>().unwrap())
             .collect();
@@ -57,7 +77,7 @@ impl From<&str> for Almanac {
             fertilizer_to_water: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
             water_to_light: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
             light_to_temperature: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
-            tempature_to_humidity: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
+            temperature_to_humidity: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
             humidity_to_location: AlmanacMapping::from(range_mapping(blocks.next().unwrap())),
         }
     }
@@ -72,6 +92,22 @@ impl AlmanacMapping {
             None => input,
             Some((range, dest)) => dest + (input - range.start),
         };
+    }
+
+    pub fn ranges(&self) -> impl Iterator<Item = &(Range<u64>, u64)> {
+        return self.0.iter();
+    }
+
+    pub fn get_rev(&self, dest: u64) -> u64 {
+        for (range, dest_start) in self.0.iter() {
+            let range_len = range.end - range.start;
+            if (*dest_start..*dest_start + range_len).contains(&dest) {
+                let offset = dest - dest_start;
+                return range.start + offset;
+            }
+        }
+
+        return dest;
     }
 }
 
@@ -111,5 +147,10 @@ mod tests {
         assert_eq!(almanac_mapping.get(99), 51);
         assert_eq!(almanac_mapping.get(100), 100);
         assert_eq!(almanac_mapping.get(60), 62);
+
+        assert_eq!(almanac_mapping.get_rev(50), 98);
+        assert_eq!(almanac_mapping.get_rev(51), 99);
+        assert_eq!(almanac_mapping.get_rev(100), 100);
+        assert_eq!(almanac_mapping.get_rev(62), 60);
     }
 }
