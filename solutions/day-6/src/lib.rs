@@ -1,36 +1,45 @@
 pub use part_1::solution as part_1;
 // pub use part_2::solution as part_2;
 
-mod char_counter;
-use char_counter::CharCounter;
-
 pub const INPUT: &str = include_str!("../input");
 
 mod part_1 {
-    use super::CharCounter;
-
     pub fn solution(input: &str) -> u32 {
-        let mut char_counter = CharCounter::new();
+        let mut lines = input.lines();
 
-        let chars: Vec<char> = input.chars().collect();
+        let times = lines
+            .next()
+            .unwrap()
+            .split_once(":")
+            .unwrap()
+            .1
+            .split_whitespace()
+            .map(|x| x.parse::<u32>().unwrap());
 
-        for c in 0..3 {
-            char_counter.inc(&chars[c]);
-        }
+        let distances = lines
+            .next()
+            .unwrap()
+            .split_once(":")
+            .unwrap()
+            .1
+            .split_whitespace()
+            .map(|x| x.parse::<u32>().unwrap());
 
-        for i in 4..input.len() {
-            char_counter.inc(&chars[i - 1]);
-            if !char_counter.has_duplicates() {
-                return i as u32;
+        let mut results: Vec<u32> = vec![];
+
+        for (time, distance) in times.zip(distances) {
+            let mut count: u32 = 0;
+            for t in 0..=time {
+                if t * (time - t) >= distance {
+                    count += 1;
+                }
             }
-            char_counter.dec(&chars[i - 4]);
+            results.push(count);
         }
-
-        return 0;
+        return results.iter().product();
     }
 }
+
 // mod part_2 {
-//     pub fn solution() -> u32 {
-//         return 0;
-//     }
+//     pub fn solution(input: &str) -> u32 {}
 // }
