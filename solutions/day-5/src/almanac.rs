@@ -51,7 +51,7 @@ impl From<&str> for Almanac {
         let mut blocks = input.split("\n\n");
 
         let seed_block = blocks.next().unwrap();
-        let mut seeds: Box<[u64]> = seed_block[6..]
+        let seeds: Box<[u64]> = seed_block[6..]
             .split_whitespace()
             .map(|seed| seed.parse::<u64>().unwrap())
             .collect();

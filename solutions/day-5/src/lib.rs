@@ -23,7 +23,6 @@ mod part_2 {
     use std::ops::Range;
     pub fn solution(input: &str) -> u64 {
         let almanac = Almanac::from(input);
-        let mut min: u64 = u64::MAX;
 
         let mut possible_locations: Vec<&(Range<u64>, u64)> =
             almanac.humidity_to_location.ranges().collect();
