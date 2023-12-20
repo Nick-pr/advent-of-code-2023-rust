@@ -30,6 +30,10 @@ name = "day-6"
 version = "0.1.0"
 
 [[package]]
+name = "day-7"
+version = "0.1.0"
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
