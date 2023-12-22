@@ -7,3 +7,6 @@ edition = "2021"
 
 [lib]
 name="day_8"
+
+[dependencies]
+num = "0.4.1"
