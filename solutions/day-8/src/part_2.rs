@@ -1,5 +1,4 @@
 use crate::{parse_input, Direction};
-use num::integer::lcm;
 
 pub fn solution(input: &str) -> u64 {
     let (directions, nodes) = parse_input(input);
@@ -35,4 +34,28 @@ fn lcm_vec(nums: Vec<u64>) -> u64 {
         result = lcm(result, *num);
     }
     return result;
+}
+
+fn lcm(a: u64, b: u64) -> u64 {
+    return (a * b) / gcd(a, b);
+}
+
+fn gcd(a: u64, b: u64) -> u64 {
+    let mut result = std::cmp::min(a, b);
+
+    while a % result != 0 || b % result != 0 {
+        result -= 1
+    }
+    return result;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::gcd;
+
+    #[test]
+    fn test_gcd() {
+        assert_eq!(gcd(2, 8), 2);
+        assert_eq!(gcd(12, 20), 4);
+    }
 }
