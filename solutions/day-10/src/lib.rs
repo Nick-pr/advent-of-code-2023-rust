@@ -3,6 +3,7 @@ mod part_2;
 
 pub use part_1::solution as part_1;
 pub use part_2::solution as part_2;
+pub use part_2::solution_shoelace_picks as part_2_shoelace_picks;
 
 pub const INPUT: &str = include_str!("../input");
 
@@ -16,7 +17,6 @@ where
 {
     f(&start);
 
-    // Navigate the pipes all the way back to S, counting how long the whole loop is
     let mut last: (usize, usize) = (start.0, start.1);
     let mut current: (usize, usize) = (
         (start.0 as isize + dir.0) as usize,

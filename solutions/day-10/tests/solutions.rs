@@ -6,4 +6,5 @@ fn test_part_1() {
 #[test]
 fn test_part_2() {
     assert_eq!(day_10::part_2(day_10::INPUT), 461);
+    assert_eq!(day_10::part_2_shoelace_picks(day_10::INPUT), 461);
 }
